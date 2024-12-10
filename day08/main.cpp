@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <bits/stdc++.h>
+#include "../utils.cpp"
 
 using namespace std;
 
@@ -34,11 +35,9 @@ bool operator==(coord a, coord b) {
     return a.first == b.first && a.second == b.second;
 }
 
-void collect_antennas(vector<vector<char>>& grid, vector<antenna_group>& antennas) {
-    int col = grid[0].size();
-    int row = grid.size();
-    for(int i=0; i<row; ++i) {
-        for(int j=0; j<col; ++j) {
+void collect_antennas(char_grid& grid, vector<antenna_group>& antennas) {
+    for(int i=0; i<grid.row; ++i) {
+        for(int j=0; j<grid.col; ++j) {
             if(grid[i][j] == '.') continue;
             bool found = false;
             for(auto& ag : antennas) {
@@ -93,30 +92,15 @@ int compute_harmonic_antinodes(int row, int col, vector<antenna_group>& antennas
 }
 void first_part(fstream& file) {
     char ch;
-    vector<vector<char>> grid = {{}};
-
-    while (file.get(ch)) {
-        if(ch == '\n') {
-            grid.push_back({});
-        }
-        else {
-            grid.back().push_back(ch);
-        }
-    }
-    if(grid.back().size() == 0) {
-        grid.pop_back();
-    }
-    cout << grid << endl;
+    char_grid grid(file);
 
     int res = 0;
     int res2 = 0;
 
-    int col = grid[0].size();
-    int row = grid.size();
     vector<antenna_group> antennas = {};
     collect_antennas(grid, antennas);
-    res = compute_antinodes(row, col, antennas);
-    res2 = compute_harmonic_antinodes(row, col, antennas);
+    res = compute_antinodes(grid.row, grid.col, antennas);
+    res2 = compute_harmonic_antinodes(grid.row, grid.col, antennas);
 
     cout << "Answer is: " << res << endl;
     cout << "Answer is: " << res2 << endl;

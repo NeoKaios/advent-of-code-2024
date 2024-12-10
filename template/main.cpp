@@ -1,7 +1,4 @@
-#include <cstring>
-#include <iostream>
-#include <fstream>
-#include <vector>
+#include "../utils.cpp"
 
 using namespace std;
 
