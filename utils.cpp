@@ -8,6 +8,41 @@ using namespace std;
 using u64 = unsigned long long;
 typedef pair<int, int> coord;
 
+void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
+    char ch;
+    u64 a = 0;
+    while (file.get(ch)) {
+        if(ch == '\n') {
+            vec.push_back(a);
+            return;
+        } else if(ch == separator) {
+            vec.push_back(a);
+            a = 0;
+        } else if(ch>='0' && ch<='9'){
+            a = 10*a + (ch - 48);
+        } else {
+            cout << "Unknown char " << ch << endl;
+        }
+    }
+}
+void get_int_list(fstream& file, char separator, vector<int>& vec) {
+    char ch;
+    int a = 0;
+    while (file.get(ch)) {
+        if(ch == '\n') {
+            vec.push_back(a);
+            return;
+        } else if(ch == separator) {
+            vec.push_back(a);
+            a = 0;
+        } else if(ch>='0' && ch<='9'){
+            a = 10*a + (ch - 48);
+        } else {
+            cout << "Unknown char " << ch << endl;
+        }
+    }
+}
+
 class int_vec : public vector<char> {
     friend std::ostream& operator<<(std::ostream& os, const int_vec& vec)
     {
@@ -71,3 +106,15 @@ class char_grid : public vector<char_vec> {
         row = size();
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const vector<int>& vec)
+{
+    for (const int i : vec) os << i << ' ';
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const vector<u64>& vec)
+{
+    for (const u64 i : vec) os << i << ' ';
+    return os;
+}

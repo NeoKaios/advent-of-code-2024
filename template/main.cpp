@@ -2,20 +2,16 @@
 
 using namespace std;
 
-using u64 = unsigned long long;
-
 void first_part(fstream& file) {
     char ch;
     u64 res = 0;
 
     while (file.get(ch)) {
         if(ch == '\n') {
-        } else if(ch >= '0' && ch <= '9') {
-        }
-        else {
-            cout << "Unknown char " << ch << endl;
+        } else {
         }
     }
+
     cout << "Answer is: " << res << endl;
 }
 
