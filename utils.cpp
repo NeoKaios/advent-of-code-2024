@@ -6,7 +6,15 @@
 using namespace std;
 
 using u64 = unsigned long long;
+using i64 = signed long long;
 typedef pair<int, int> coord;
+
+enum dir {
+    Right,
+    Up,
+    Left,
+    Down,
+};
 
 void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
     char ch;
@@ -25,6 +33,7 @@ void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
         }
     }
 }
+
 void get_int_list(fstream& file, char separator, vector<int>& vec) {
     char ch;
     int a = 0;
@@ -41,6 +50,34 @@ void get_int_list(fstream& file, char separator, vector<int>& vec) {
             cout << "Unknown char " << ch << endl;
         }
     }
+}
+
+int parse_u64_list(fstream& file, string _str, vector<u64>& out) {
+    char ch;
+    bool parsing_int = false;
+    int i = 0;
+    u64 a = 0;
+    string str = _str + '\n';
+    while(file.get(ch)) {
+        if(str[i] == '%') {
+            if(ch>='0' && ch<='9') {
+                a = 10*a + (ch - 48);
+                continue;
+            }
+            else {
+                out.push_back(a);
+                a=0;
+                ++i;
+            }
+        }
+        if(str[i] == ch) ++i;
+        else {
+            cout << "Error: Unexpected char in line_parsing (" << ch << ") expecting " << str[i] << endl;
+            return 1;
+        }
+        if(i == str.size()) return 0;
+    }
+    return 1;
 }
 
 class int_vec : public vector<char> {
@@ -107,14 +144,16 @@ class char_grid : public vector<char_vec> {
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const vector<int>& vec)
-{
+std::ostream& operator<<(std::ostream& os, const vector<int>& vec) {
     for (const int i : vec) os << i << ' ';
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const vector<u64>& vec)
-{
+std::ostream& operator<<(std::ostream& os, const vector<u64>& vec) {
     for (const u64 i : vec) os << i << ' ';
     return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const coord& c) {
+    return os << c.first << ' ' << c.second;
 }
