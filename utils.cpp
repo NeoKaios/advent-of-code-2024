@@ -80,6 +80,39 @@ int parse_u64_list(fstream& file, string _str, vector<u64>& out) {
     return 1;
 }
 
+int parse_int_list(fstream& file, string _str, vector<int>& out) {
+    char ch;
+    bool parsing_int = false;
+    int i = 0;
+    int a = 0;
+    string str = _str + '\n';
+    bool neg_flag = false;
+    while(file.get(ch)) {
+        if(str[i] == '%') {
+            if(ch>='0' && ch<='9') {
+                a = 10*a + (ch - 48);
+                continue;
+            } else if (a == 0 && ch == '-') {
+                neg_flag = true;
+                continue;
+            }
+            else {
+                out.push_back(neg_flag ? -a : a);
+                neg_flag = false;
+                a=0;
+                ++i;
+            }
+        }
+        if(str[i] == ch) ++i;
+        else {
+            cout << "Error: Unexpected char in line_parsing (" << ch << ") expecting " << str[i] << endl;
+            return 1;
+        }
+        if(i == str.size()) return 0;
+    }
+    return 1;
+}
+
 class int_vec : public vector<char> {
     friend std::ostream& operator<<(std::ostream& os, const int_vec& vec)
     {
@@ -141,6 +174,15 @@ class char_grid : public vector<char_vec> {
         if(back().size() == 0) pop_back();
         col = this[0].size();
         row = size();
+    }
+
+    char_grid(char init, int row, int col) {
+        for(int i=0; i<row; ++i) {
+            push_back({});
+            for(int j=0; j<col; ++j) {
+                back().push_back(init);
+            }
+        }
     }
 };
 
