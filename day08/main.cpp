@@ -7,33 +7,10 @@
 
 using namespace std;
 
-using u64 = unsigned long long;
-typedef pair<int, int> coord;
-
 struct antenna_group {
     char freq;
     vector<coord> coords;
 };
-
-coord operator+(coord a, coord b) {
-    return {a.first + b.first, a.second + b.second};
-}
-
-coord operator-(coord a, coord b) {
-    return {a.first - b.first, a.second - b.second};
-}
-
-bool operator<=(coord a, coord b) {
-    return a.first <= b.first && a.second <= b.second;
-}
-
-bool operator>=(coord a, coord b) {
-    return a.first >= b.first && a.second >= b.second;
-}
-
-bool operator==(coord a, coord b) {
-    return a.first == b.first && a.second == b.second;
-}
 
 void collect_antennas(char_grid& grid, vector<antenna_group>& antennas) {
     for(int i=0; i<grid.row; ++i) {

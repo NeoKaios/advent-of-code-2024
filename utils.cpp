@@ -9,12 +9,70 @@ using u64 = unsigned long long;
 using i64 = signed long long;
 typedef pair<int, int> coord;
 
+coord operator+(coord a, coord b) {
+    return {a.first + b.first, a.second + b.second};
+}
+
+void operator+=(coord& a, coord b) {
+    a.first += b.first;
+    a.second += b.second;
+}
+
+coord operator-(coord a, coord b) {
+    return {a.first - b.first, a.second - b.second};
+}
+
+bool operator<=(coord a, coord b) {
+    return a.first <= b.first && a.second <= b.second;
+}
+
+bool operator>=(coord a, coord b) {
+    return a.first >= b.first && a.second >= b.second;
+}
+
+bool operator==(coord a, coord b) {
+    return a.first == b.first && a.second == b.second;
+}
+
 enum dir {
     Right,
     Up,
     Left,
     Down,
 };
+
+dir char_to_dir(char dir) {
+    switch(dir) {
+        case '<':
+            return Left;
+        case 'v':
+            return Down;
+        case '>':
+            return Right;
+        case '^':
+            return Up;
+    }
+    cout << "ERROR when converting char_to_dir " << dir << endl;
+    return Right;
+}
+
+coord dir_to_coord_offset(dir dir) {
+    switch(dir) {
+        case Left:
+            return {0,-1};
+        case Down:
+            return {1,0};
+        case Right:
+            return {0,1};
+        case Up:
+        default:
+            return {-1,0};
+    }
+}
+
+coord char_to_coord_offset(char dir) {
+    return dir_to_coord_offset(char_to_dir(dir));
+}
 
 void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
     char ch;
@@ -136,8 +194,10 @@ class int_grid : public vector<int_vec> {
         char ch;
         push_back({});
         while (file.get(ch)) {
-            if(ch == '\n') push_back({});
-            else back().push_back(ch-48);
+            if(ch == '\n') {
+                if(back().size() == 0) break;
+                push_back({});
+            } else back().push_back(ch-48);
         }
         if(back().size() == 0) pop_back();
         col = this[0].size();
@@ -151,6 +211,19 @@ class char_vec : public vector<char> {
         for (const char i : vec) os << i;
         return os;
     }
+    public:
+    char_vec() {}
+
+    char_vec(fstream& file, bool stop_at_newline) {
+        char ch;
+        while(file.get(ch)) {
+            if(ch == '\n') {
+                if(stop_at_newline) break;
+                else continue;
+            }
+            push_back(ch);
+        }
+    }
 };
 
 class char_grid : public vector<char_vec> {
@@ -159,21 +232,38 @@ class char_grid : public vector<char_vec> {
     int col;
 
     friend std::ostream & operator<<(std::ostream &os, const char_grid& grid) {
+        os << "Grid of size " << grid.row << 'x' << grid.col << ':' << endl;
         for (const char_vec v : grid)
             os << v << endl;
         return os;
     }
 
+    char& operator()(const coord coord) {
+        return at(coord.first).at(coord.second);
+    }
+
+    char_vec operator[](const size_t i) {
+        return at(i);
+    }
+
+    void update_row_col() {
+        col = at(0).size();
+        row = size();
+    }
+
+    char_grid() {}
+
     char_grid(fstream& file) {
         char ch;
         push_back({});
         while (file.get(ch)) {
-            if(ch == '\n') push_back({});
-            else back().push_back(ch);
+            if(ch == '\n') {
+                if(back().size() == 0) break;
+                push_back({});
+            } else back().push_back(ch);
         }
         if(back().size() == 0) pop_back();
-        col = this[0].size();
-        row = size();
+        update_row_col();
     }
 
     char_grid(char init, int row, int col) {
@@ -183,6 +273,7 @@ class char_grid : public vector<char_vec> {
                 back().push_back(init);
             }
         }
+        update_row_col();
     }
 };
 
