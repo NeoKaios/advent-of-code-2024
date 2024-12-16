@@ -23,6 +23,8 @@ int main (int argc, char *argv[])
     fstream file;
     if(argc > 1 && !strcmp(argv[1], "-e"))
         file.open("example.txt", ios::in);
+    else if(argc > 1 && !strcmp(argv[1], "-e2"))
+        file.open("example2.txt", ios::in);
     else
         file.open("input.txt", ios::in);
     if (!file) {

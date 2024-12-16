@@ -9,6 +9,20 @@ using u64 = unsigned long long;
 using i64 = signed long long;
 typedef pair<int, int> coord;
 
+std::ostream& operator<<(std::ostream& os, const vector<int>& vec) {
+    for (const int i : vec) os << i << ' ';
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const vector<u64>& vec) {
+    for (const u64 i : vec) os << i << ' ';
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const coord& c) {
+    return os << c.first << ' ' << c.second;
+}
+
 coord operator+(coord a, coord b) {
     return {a.first + b.first, a.second + b.second};
 }
@@ -17,6 +31,11 @@ void operator+=(coord& a, coord b) {
     a.first += b.first;
     a.second += b.second;
 }
+
+coord operator-(coord a) {
+    return {-a.first, -a.second};
+}
+
 
 coord operator-(coord a, coord b) {
     return {a.first - b.first, a.second - b.second};
@@ -62,17 +81,29 @@ coord dir_to_coord_offset(dir dir) {
             return {0,-1};
         case Down:
             return {1,0};
-        case Right:
-            return {0,1};
         case Up:
-        default:
             return {-1,0};
+        case Right:
+        default:
+            return {0,1};
     }
 }
+
+dir coord_offset_to_dir(coord offset) {
+    if(offset == (coord){0,-1}) return Left;
+    if(offset == (coord){0,1}) return Right;
+    if(offset == (coord){1,0}) return Down;
+    if(offset == (coord){-1,0}) return Up;
+    cout << "ERROR, given value is not a coord_offset: " << offset << endl;
+    return Right;
+}
+
 
 coord char_to_coord_offset(char dir) {
     return dir_to_coord_offset(char_to_dir(dir));
 }
+
+typedef pair<coord,dir> coord_dir;
 
 void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
     char ch;
@@ -171,6 +202,20 @@ int parse_int_list(fstream& file, string _str, vector<int>& out) {
     return 1;
 }
 
+class grid : public vector<vector<u64>> {
+    public:
+    friend std::ostream & operator<<(std::ostream &os, const grid& grid) {
+        for (const auto v : grid)
+            os << v << endl;
+        return os;
+    }
+
+    u64& operator()(const coord coord) {
+        return at(coord.first).at(coord.second);
+    }
+
+};
+
 class int_vec : public vector<char> {
     friend std::ostream& operator<<(std::ostream& os, const int_vec& vec)
     {
@@ -242,13 +287,23 @@ class char_grid : public vector<char_vec> {
         return at(coord.first).at(coord.second);
     }
 
-    char_vec operator[](const size_t i) {
+    char_vec& operator[](const size_t i) {
         return at(i);
     }
 
     void update_row_col() {
         col = at(0).size();
         row = size();
+    }
+
+    coord find(char ch) {
+        for(int i=0;i<row;++i) {
+            for(int j=0;j<col;++j) {
+                if(at(i).at(j) == ch)
+                    return (coord){i,j};
+            }
+        }
+        return {};
     }
 
     char_grid() {}
@@ -277,16 +332,25 @@ class char_grid : public vector<char_vec> {
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const vector<int>& vec) {
-    for (const int i : vec) os << i << ' ';
+std::ostream& operator<<(std::ostream& os, const dir& dir) {
+    switch(dir) {
+        case Left:
+            os << "Left";
+            break;
+        case Down:
+            os << "Down";
+            break;
+        case Right:
+            os << "Right";
+            break;
+        case Up:
+        default:
+            os << "Up";
+            break;
+    }
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const vector<u64>& vec) {
-    for (const u64 i : vec) os << i << ' ';
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const coord& c) {
-    return os << c.first << ' ' << c.second;
+std::ostream& operator<<(std::ostream& os, const coord_dir& cd) {
+    return os << cd.first << ' ' << cd.second << endl;
 }

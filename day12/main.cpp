@@ -3,6 +3,7 @@
 
 using namespace std;
 typedef pair<u64,u64> pairu64;
+typedef tuple<int,int,dir> int_int_dir;
 
 void operator+=(pairu64& a, pairu64 b) {
     a.first += b.first;
@@ -27,9 +28,8 @@ pair<u64,u64> visit_region(int i, int j, char_grid& grid, set<coord>& history) {
     else res += (pairu64){0,1};
     return res;
 }
-typedef tuple<int,int,dir> coord_dir;
 
-u64 sides(int i, int j, char_grid& grid, dir dir, set<coord_dir>& history) {
+u64 sides(int i, int j, char_grid& grid, dir dir, set<int_int_dir>& history) {
     if(history.count({i,j,dir})>0) return 0;
     history.insert({i,j,dir});
     switch(dir) {
@@ -66,7 +66,7 @@ u64 sides(int i, int j, char_grid& grid, dir dir, set<coord_dir>& history) {
     return 0;
 }
 
-u64 interior_sides(int i, int j, char_grid& grid, set<coord_dir>& sides_history, set<coord>& area_history) {
+u64 interior_sides(int i, int j, char_grid& grid, set<int_int_dir>& sides_history, set<coord>& area_history) {
     if(area_history.count({i,j})>0) return 0;
     area_history.insert({i,j});
     u64 res = 0;
@@ -98,7 +98,7 @@ u64 interior_sides(int i, int j, char_grid& grid, set<coord_dir>& sides_history,
 }
 
 u64 region_sides(int i, int j, char_grid& grid) {
-    set<coord_dir> sides_history = {};
+    set<int_int_dir> sides_history = {};
     set<coord> area_history = {};
     u64 res = sides(i,j,grid,Right,sides_history);
     return res+interior_sides(i,j,grid,sides_history,area_history);
