@@ -141,6 +141,21 @@ void get_int_list(fstream& file, char separator, vector<int>& vec) {
     }
 }
 
+int parse_str(fstream& file, string str) {
+    char ch;
+    int i = 0;
+    while(file.get(ch)) {
+        if(str[i] == ch) ++i;
+        else {
+            cout << "Error: Unexpected char in parse_str (" << ch << ") expecting " << str[i] << endl;
+            return 1;
+        }
+        if(i == str.size()) return 0;
+    }
+    return 1;
+}
+
+
 int parse_u64_list(fstream& file, string _str, vector<u64>& out) {
     char ch;
     bool parsing_int = false;
