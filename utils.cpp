@@ -265,6 +265,38 @@ class int_grid : public vector<int_vec> {
     }
 };
 
+class u64_grid: public vector<vector<u64>> {
+    public:
+    int row;
+    int col;
+
+    friend std::ostream & operator<<(std::ostream &os, const u64_grid& grid) {
+        for (const vector<u64> v : grid)
+            os << v << endl;
+        return os;
+    }
+
+    void update_row_col() {
+        col = at(0).size();
+        row = size();
+    }
+
+    u64_grid(u64 init, int row, int col) {
+        for(int i=0; i<row; ++i) {
+            push_back({});
+            for(int j=0; j<col; ++j) {
+                back().push_back(init);
+            }
+        }
+        update_row_col();
+    }
+
+    u64& operator()(const coord coord) {
+        return at(coord.first).at(coord.second);
+    }
+
+};
+
 class char_vec : public vector<char> {
     friend std::ostream& operator<<(std::ostream& os, const char_vec& vec)
     {
