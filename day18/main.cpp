@@ -86,7 +86,7 @@ void first_part(fstream& file) {
     deque<coord> queue = {};
     vector<int> out = {};
     while(!file.eof()) {
-        get_int_list(file, ',', out);
+        get_num_list(file, ",", out);
         bytes.push_back({out[1],out[0]});
         out.clear();
     }

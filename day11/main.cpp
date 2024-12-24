@@ -39,7 +39,7 @@ void first_part(fstream& file) {
     char ch;
     u64 res = 0;
     vector<u64> stones = {};
-    get_u64_list(file, ' ', stones);
+    get_num_list(file, " ", stones);
     cout << stones << endl;
 
     map<u64, vector<u64>> history = {};

@@ -111,7 +111,7 @@ void first_part(fstream& file) {
     parse_u64_list(file, "Register C: %", out);
     parse_str(file, "\nProgram: ");
     vector<int> program = {};
-    get_int_list(file, ',', program);
+    get_num_list(file, ",", program);
     Computer comp(out, program);
     comp.run();
 }
@@ -141,7 +141,7 @@ void second_part(fstream& file) {
     parse_u64_list(file, "Register C: %", out);
     parse_str(file, "\nProgram: ");
     vector<int> program = {};
-    get_int_list(file, ',', program);
+    get_num_list(file, ",", program);
     Computer comp(out, program);
     // comp.debug = true;
     u64 a = find_prev_a(comp, 1, comp.program.size()-1);

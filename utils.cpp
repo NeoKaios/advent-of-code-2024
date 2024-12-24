@@ -2,26 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "print.cpp"
 
 using namespace std;
-
-using u64 = unsigned long long;
-using i64 = signed long long;
-typedef pair<int, int> coord;
-
-std::ostream& operator<<(std::ostream& os, const vector<int>& vec) {
-    for (const int i : vec) os << i << ' ';
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const vector<u64>& vec) {
-    for (const u64 i : vec) os << i << ' ';
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const coord& c) {
-    return os << c.first << ' ' << c.second;
-}
 
 coord operator+(coord a, coord b) {
     return {a.first + b.first, a.second + b.second};
@@ -53,13 +36,6 @@ bool operator==(coord a, coord b) {
     return a.first == b.first && a.second == b.second;
 }
 
-enum dir {
-    Right,
-    Up,
-    Left,
-    Down,
-};
-
 dir char_to_dir(char dir) {
     switch(dir) {
         case '<':
@@ -75,7 +51,7 @@ dir char_to_dir(char dir) {
     return Right;
 }
 
-coord dir_to_coord_offset(dir dir) {
+coord inline dir_to_coord_offset(dir dir) {
     switch(dir) {
         case Left:
             return {0,-1};
@@ -87,6 +63,10 @@ coord dir_to_coord_offset(dir dir) {
         default:
             return {0,1};
     }
+}
+
+coord operator+(coord a, dir b) {
+    return a + dir_to_coord_offset(b);
 }
 
 dir coord_offset_to_dir(coord offset) {
@@ -105,15 +85,28 @@ coord char_to_coord_offset(char dir) {
 
 typedef pair<coord,dir> coord_dir;
 
-void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
+template <typename T>
+
+void get_num_list(fstream& file, string separator, vector<T>& vec) {
     char ch;
-    u64 a = 0;
+    T a = 0;
+    int i = 0;
+    bool in_separation=false;
     while (file.get(ch)) {
+        if(in_separation && i < separator.size() && ch == separator[i]) {
+            ++i;
+            continue;
+        } else {
+            in_separation=false;
+            i=0;
+        }
         if(ch == '\n') {
             vec.push_back(a);
             return;
-        } else if(ch == separator) {
+        } else if(ch == separator[0]) {
             vec.push_back(a);
+            i++;
+            in_separation = true;
             a = 0;
         } else if(ch>='0' && ch<='9'){
             a = 10*a + (ch - 48);
@@ -123,20 +116,29 @@ void get_u64_list(fstream& file, char separator, vector<u64>& vec) {
     }
 }
 
-void get_int_list(fstream& file, char separator, vector<int>& vec) {
+void get_string_list(fstream& file, string separator, vector<string>& vec) {
     char ch;
-    int a = 0;
+    string a = "";
+    int i = 0;
+    bool in_separation=false;
     while (file.get(ch)) {
+        if(in_separation && i < separator.size() && ch == separator[i]) {
+            ++i;
+            continue;
+        } else {
+            in_separation=false;
+            i=0;
+        }
         if(ch == '\n') {
             vec.push_back(a);
             return;
-        } else if(ch == separator) {
+        } else if(ch == separator[0]) {
             vec.push_back(a);
-            a = 0;
-        } else if(ch>='0' && ch<='9'){
-            a = 10*a + (ch - 48);
+            i++;
+            in_separation = true;
+            a = "";
         } else {
-            cout << "Unknown char " << ch << endl;
+            a += ch;
         }
     }
 }
@@ -319,6 +321,7 @@ class char_vec : public vector<char> {
 };
 
 class char_grid : public vector<char_vec> {
+    char out_of_range = '\x00';
     public:
     int row;
     int col;
@@ -333,6 +336,13 @@ class char_grid : public vector<char_vec> {
     char& operator()(const coord coord) {
         return at(coord.first).at(coord.second);
     }
+
+    char& safe_get(const coord coo) {
+        if(coo >= (coord){0,0} && coo <= (coord){row-1, col-1})
+            return at(coo.first).at(coo.second);
+        else return out_of_range;
+    }
+
 
     char_vec& operator[](const size_t i) {
         return at(i);
