@@ -1,5 +1,6 @@
 #include "type.cpp"
 #include <vector>
+#include <set>
 
 std::ostream& operator<<(std::ostream& os, const vector<int>& vec) {
     for (const int i : vec) os << i << ' ';
@@ -16,6 +17,10 @@ std::ostream& operator<<(std::ostream& os, const vector<string>& vec) {
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const set<string>& vec) {
+    for (const auto i : vec) os << i << ' ';
+    return os;
+}
 
 std::ostream& operator<<(std::ostream& os, const coord& c) {
     return os << c.first << ' ' << c.second;
